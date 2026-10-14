@@ -18,15 +18,18 @@ def get_engine_args(url: str):
         if ":memory:" in url or "mode=memory" in url:
             args["poolclass"] = StaticPool
     else:
-        # PostgreSQL pool configuration
-        args["pool_size"] = 10
-        args["max_overflow"] = 20
+        # PostgreSQL pool configuration for serverless and cloud poolers
+        args["pool_size"] = 5
+        args["max_overflow"] = 10
         args["pool_pre_ping"] = True
-        args["pool_recycle"] = 1800
+        args["pool_recycle"] = 300
     return args
 
 
 def _create_safe_engine(url: str, is_ro: bool = False):
+    import os
+    from pathlib import Path
+    import shutil
     try:
         eng = create_engine(url, **get_engine_args(url))
         with eng.connect() as conn:
@@ -35,7 +38,19 @@ def _create_safe_engine(url: str, is_ro: bool = False):
         return eng
     except Exception as e:
         logger.warning(f"Could not connect to configured DB ({e}). Falling back to local SQLite database.")
-        sqlite_url = "sqlite:///./sales_ops.db"
+        sqlite_file = Path(__file__).resolve().parent.parent / "sales_ops.db"
+        if os.environ.get("VERCEL") and sqlite_file.exists():
+            tmp_db = Path("/tmp/sales_ops.db")
+            if not tmp_db.exists():
+                try:
+                    shutil.copyfile(sqlite_file, tmp_db)
+                except Exception:
+                    pass
+            sqlite_url = "sqlite:////tmp/sales_ops.db"
+        elif sqlite_file.exists():
+            sqlite_url = f"sqlite:///{sqlite_file.as_posix()}"
+        else:
+            sqlite_url = "sqlite:///./sales_ops.db"
         return create_engine(sqlite_url, **get_engine_args(sqlite_url))
 
 # Primary engine (admin/read-write)

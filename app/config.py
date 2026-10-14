@@ -15,15 +15,18 @@ class Settings(BaseSettings):
     ANONYMIZE_NAMES: bool = True
 
     # Database URLs
-    # Defaults to SQLite locally if PostgreSQL is not specified in env
+    # Defaults to Supabase IPv4 pooler if not specified in env
     DATABASE_URL: str = Field(
         default_factory=lambda: os.getenv(
             "DATABASE_URL",
-            "sqlite:///./sales_ops.db"
+            "postgresql+psycopg2://sales_app.ccivcmvwhjireufzuvxs:SalesApp2026!Secure@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
         )
     )
     DATABASE_RO_URL: Optional[str] = Field(
-        default_factory=lambda: os.getenv("DATABASE_RO_URL", None)
+        default_factory=lambda: os.getenv(
+            "DATABASE_RO_URL",
+            "postgresql+psycopg2://sales_app.ccivcmvwhjireufzuvxs:SalesApp2026!Secure@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
+        )
     )
 
     # Groq LLM API
