@@ -222,3 +222,5 @@ $$\text{Total Tokens} = 10,000 \times 515 = 5,150,000\text{ tokens/month (~5.15M
 - **Frontend (Static/Next.js):** Platforms like Vercel or Cloudflare Pages are designed for static frontend assets or edge functions. They are not suited for long-running stateful Docker backends or embedded database connections.
 - **Backend & Database:** Deploy the Dockerized FastAPI application to container platforms such as **Render, Railway, Fly.io, or AWS ECS**, connecting to a managed PostgreSQL 16 database instance.
 - **Production Checklist:** Set `DEBUG=false`, configure high-entropy `WEBHOOK_API_KEY`, bind SSL certificates, and configure CORS origins.
+#   s a l e s _ a s s i s t a n t  
+ 

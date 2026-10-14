@@ -26,13 +26,25 @@ def get_engine_args(url: str):
     return args
 
 
+def _create_safe_engine(url: str, is_ro: bool = False):
+    try:
+        eng = create_engine(url, **get_engine_args(url))
+        with eng.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        logger.info(f"Connected to database successfully ({url.split('@')[-1] if '@' in url else url}).")
+        return eng
+    except Exception as e:
+        logger.warning(f"Could not connect to configured DB ({e}). Falling back to local SQLite database.")
+        sqlite_url = "sqlite:///./sales_ops.db"
+        return create_engine(sqlite_url, **get_engine_args(sqlite_url))
+
 # Primary engine (admin/read-write)
-engine = create_engine(settings.DATABASE_URL, **get_engine_args(settings.DATABASE_URL))
+engine = _create_safe_engine(settings.DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Read-only engine for analytics endpoints
 ro_url = settings.DATABASE_RO_URL or settings.DATABASE_URL
-engine_ro = create_engine(ro_url, **get_engine_args(ro_url))
+engine_ro = _create_safe_engine(ro_url, is_ro=True)
 SessionRO = sessionmaker(autocommit=False, autoflush=False, bind=engine_ro)
 
 
