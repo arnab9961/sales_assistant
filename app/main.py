@@ -67,12 +67,14 @@ app = FastAPI(
 # Middleware
 app.add_middleware(RequestIdAndLoggingMiddleware)
 
-# Static files & templates
-static_path = Path("app/static")
+# Static files & templates — resolve paths relative to this file so the app
+# works regardless of the working directory (e.g. on Vercel serverless).
+_app_dir = Path(__file__).parent
+static_path = _app_dir / "static"
 if static_path.exists():
-    app.mount("/static", StaticFiles(directory="app/static"), name="static")
+    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
-templates = Jinja2Templates(directory="app/templates")
+templates = Jinja2Templates(directory=str(_app_dir / "templates"))
 
 # Include Routers
 app.include_router(quality_router)
