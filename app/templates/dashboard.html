@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }} - Sunset Kuakata Hotel & Resort</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="brand-wrapper">
+            <div class="brand-logo">SK</div>
+            <div>
+                <h1 class="brand-title">{{ app_name }}</h1>
+                <p class="brand-subtitle">Sunset Kuakata Hotel & Resort • Operations Intelligence & AI Lead Automation</p>
+            </div>
+        </div>
+        <div class="header-badges">
+            {% if anonymize_names %}
+            <span class="chip chip-anon" title="Privacy mode: All personal names replaced with stable pseudonyms">
+                <span class="dot"></span> Anonymization Active
+            </span>
+            {% endif %}
+            <span class="chip chip-status">
+                <span class="dot"></span> Read-Only DB Connected
+            </span>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Filter Controls Bar -->
+        <section class="control-bar" aria-label="Filters">
+            <div class="filter-group">
+                <span class="filter-label">Filter by Role:</span>
+                <select id="roleFilter" class="select-input">
+                    <option value="All">All Roles (Company-wide)</option>
+                    <option value="Team Leader">Team Leader</option>
+                    <option value="Executive">Executive</option>
+                    <option value="Coordinator">Coordinator</option>
+                    <option value="Group Leader">Group Leader</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <span class="filter-label">Search Executive:</span>
+                <input type="text" id="execSearch" class="text-input" placeholder="e.g. Exec-01 or TL...">
+            </div>
+            <button class="btn" onclick="initDashboard()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                </svg>
+                Refresh Data
+            </button>
+        </section>
+
+        <!-- KPI Cards Grid -->
+        <section class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-title">Management Target</div>
+                <div class="kpi-value kpi-highlight" id="kpiTarget">--</div>
+                <div class="kpi-subtext">Active Filter Budget Target</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Achieved New Sales</div>
+                <div class="kpi-value kpi-success" id="kpiAchieved">--</div>
+                <div class="kpi-subtext">Month of September 2026</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Achievement Rate</div>
+                <div class="kpi-value" id="kpiAchievePct">--</div>
+                <div class="kpi-subtext">DAX Measure: DIVIDE(Achieved, Target)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Total Collected (incl. EMI)</div>
+                <div class="kpi-value kpi-warning" id="kpiCollection">--</div>
+                <div class="kpi-subtext">New Sales Deposit + EMI Collections</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Execs ≥ 100% Target</div>
+                <div class="kpi-value kpi-success" id="kpiExec100">--</div>
+                <div class="kpi-subtext">Met or Exceeded Target</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Execs at Zero Achieved</div>
+                <div class="kpi-value" style="color: #ef4444;" id="kpiExecZero">--</div>
+                <div class="kpi-subtext">Immediate Follow-up Required</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Mean / Median Achieved %</div>
+                <div class="kpi-value" id="kpiMeanMedian" style="font-size: 1.4rem;">--</div>
+                <div class="kpi-subtext">Skewness Indicator across Team</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-title">Top-10 Concentration</div>
+                <div class="kpi-value kpi-highlight" id="kpiConcentration">--</div>
+                <div class="kpi-subtext">% of Total Sales from Top 10 Execs</div>
+            </div>
+        </section>
+
+        <!-- Charts Row 1: Executive Sales & Distribution -->
+        <section class="charts-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Top 10 Executives: Target vs Achieved</h2>
+                        <p class="card-desc">Comparative analysis of assigned budget targets against achieved new sales</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="targetAchievedChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Achievement Band Distribution</h2>
+                        <p class="card-desc">Histogram showing count of executives within each performance tier</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="histogramChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Charts Row 2: Projects & Dues Separation -->
+        <section class="charts-grid">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Project Wise Collection (Only Sep-26)</h2>
+                        <p class="card-desc">Collections across Kuakata, DFI, Hospital, Deck, and Management shares</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="projectChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 class="card-title">Dues Exposure by Booking Status</h2>
+                        <p class="card-desc">Outstanding dues breakdown (Full Paid, EMI, Token, Hold, Cancel)</p>
+                    </div>
+                </div>
+                <div class="chart-wrapper">
+                    <canvas id="duesStatusChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Forecast Section -->
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">
+                        <span>3-Month Revenue Collection Forecast</span>
+                        <span class="chip" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b; border-color: #f59e0b;">LOW CONFIDENCE (N=9 &lt; 12)</span>
+                    </h2>
+                    <p class="card-desc">Historical actuals (Jan-Sep 2026) projected through Q4 2026 with 95% prediction intervals</p>
+                </div>
+                <div style="text-align: right; font-size: 0.8rem; color: var(--text-muted);">
+                    Model: <strong id="forecastModelName" style="color: #38bdf8;">--</strong><br>
+                    Holdout MAE: <span id="forecastMAE">--</span> | RMSE: <span id="forecastRMSE">--</span>
+                </div>
+            </div>
+
+            <div class="forecast-banner">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div>
+                    <strong>Data Limitation Notice:</strong> Only 9 monthly data points are supported by the records.
+                    Full annual seasonality (e.g. holiday tourism surges) cannot be statistically confirmed without 24+ months.
+                    This forecast serves strictly as an operational baseline.
+                </div>
+            </div>
+
+            <div class="chart-wrapper" style="height: 340px;">
+                <canvas id="forecastChart"></canvas>
+            </div>
+        </section>
+
+        <!-- Executive Leaderboard Table -->
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Executive Performance Leaderboard</h2>
+                    <p class="card-desc">Individual sales targets, achieved amounts, dues, and total collections (Sep-26)</p>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Executive (Pseudonym)</th>
+                            <th>Role</th>
+                            <th>Target</th>
+                            <th>Achieved</th>
+                            <th>Achievement %</th>
+                            <th>Total Collection</th>
+                        </tr>
+                    </thead>
+                    <tbody id="execTableBody">
+                        <tr><td colspan="7" style="text-align:center; padding: 20px;">Loading executive data...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Phase 5: AI Lead Qualification Lab -->
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">AI Lead Qualification Lab (Groq LLM)</h2>
+                    <p class="card-desc">Submit investor inquiries for automated classification into Hot, Warm, or Cold with scoring</p>
+                </div>
+            </div>
+
+            <div class="lead-lab-grid">
+                <!-- Submission Form -->
+                <div>
+                    <div id="formAlert" style="display: none;"></div>
+                    <form id="leadForm" class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Customer Name *</label>
+                            <input type="text" id="leadName" class="form-input" placeholder="e.g. Md. Kabir Hossain" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address *</label>
+                            <input type="email" id="leadEmail" class="form-input" placeholder="customer@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone Number * (≥10 digits)</label>
+                            <input type="tel" id="leadPhone" class="form-input" placeholder="+8801712345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Investment Budget (BDT) *</label>
+                            <input type="number" id="leadBudget" class="form-input" placeholder="e.g. 500000" min="1" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Product Interest *</label>
+                            <input type="text" id="leadInterest" class="form-input" placeholder="e.g. Sunset Kuakata Deluxe Hotel Share" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Inquiry Message / Purchase Intent</label>
+                            <textarea id="leadMessage" class="form-input" placeholder="Describe customer timeline, payment preference, or questions..."></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <button type="submit" id="submitLeadBtn" class="btn" style="width: 100%; justify-content: center; padding: 12px;">
+                                Qualify with AI
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- AI Outcome Card -->
+                <div id="outcomeContainer" class="ai-outcome-card">
+                    <span class="chip chip-anon" style="margin-bottom: 12px;">AI Assistant Ready</span>
+                    <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 6px;">Lead Qualification Engine</h3>
+                    <p style="font-size: 0.825rem; color: #94a3b8; max-width: 320px;">
+                        Submit a lead on the left. The AI model evaluates stated purchase intent, budget fit, and closing readiness strictly as data.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Recent Leads Table -->
+            <div style="margin-top: 28px;">
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 10px;">Recent Inquiries</h3>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer Name</th>
+                                <th>Budget</th>
+                                <th>Interest</th>
+                                <th>Category</th>
+                                <th>Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsTableBody">
+                            <tr><td colspan="6" style="text-align:center; padding: 14px;">Loading inquiries...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data Quality & Audit Section -->
+        <section class="card">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Data Quality & Reconciliation Audit</h2>
+                    <p class="card-desc">Automated arithmetic validation and cross-checks against original spreadsheet summary totals</p>
+                </div>
+                <div>
+                    <span id="qualityStatusBadge" class="chip chip-status">PASS</span>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Reconciliation Metric</th>
+                            <th>Computed Sum</th>
+                            <th>Sheet Summary Row</th>
+                            <th>Reconciliation Status</th>
+                            <th>Audit Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="crossCheckTableBody">
+                        <tr><td colspan="5" style="text-align:center; padding: 16px;">Loading quality report...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="margin-top: 18px; padding: 14px; background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.8rem; color: var(--text-muted);">
+                <strong style="color: #fff;">Missing Value Policy:</strong>
+                <p id="qualityPolicyText" style="margin-top: 4px;"></p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer style="text-align: center; font-size: 0.8rem; color: var(--text-dim); padding: 24px;">
+        AI Sales Operations Assistant • Sunset Kuakata Hotel & Resort Ltd. • Built with FastAPI, PostgreSQL 16 & Groq LLM
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

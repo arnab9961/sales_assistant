@@ -1,0 +1,56 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: sales_ops_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres_password_change_in_production}
+      POSTGRES_DB: ${POSTGRES_DB:-sales_ops}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d sales_ops"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sales_ops_api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      APP_NAME: "AI Sales Operations Assistant"
+      APP_ENV: production
+      DEBUG: "false"
+      ANONYMIZE_NAMES: ${ANONYMIZE_NAMES:-true}
+      DATABASE_URL: postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres_password_change_in_production}@db:5432/${POSTGRES_DB:-sales_ops}
+      DATABASE_RO_URL: postgresql+psycopg2://analytics_ro:analytics_ro_password@db:5432/${POSTGRES_DB:-sales_ops}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      GROQ_MODEL: ${GROQ_MODEL:-openai/gpt-oss-120b}
+      WEBHOOK_API_KEY: ${WEBHOOK_API_KEY:-change_me_webhook_secret_key_12345}
+      N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL:-}
+      DATA_DIR: data
+    volumes:
+      - ./data:/app/data:ro
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  postgres_data:
+    name: sales_ops_postgres_data
