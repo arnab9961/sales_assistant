@@ -28,7 +28,7 @@ def get_kpis(
 
 @router.get("/rankings", response_model=RankingsResponse)
 def get_rankings(
-    top_n: int = Query(10, ge=1, le=50, description="Number of top executives to return"),
+    top_n: int = Query(10, ge=1, le=100, description="Number of top executives to return"),
     min_target: float = Query(50000.0, ge=0.0, description="Minimum target threshold for % ranking"),
     db: Session = Depends(get_ro_db),
 ):

@@ -81,28 +81,53 @@ async function loadKPIs(role = '') {
 // 2. Load Rankings & Charts
 async function loadRankingsAndCharts() {
   try {
-    const [rankingsRes, statsRes, qualityRes] = await Promise.all([
+    const [rankingsRes, statsRes, qualityRes] = await Promise.allSettled([
       fetch('/api/rankings?top_n=64'),
       fetch('/api/stats'),
       fetch('/api/quality')
     ]);
 
-    const rankingsData = await rankingsRes.json();
-    allExecutives = rankingsData.top_by_amount;
-    renderExecutiveTable(allExecutives);
-    renderTargetVsAchievedChart(rankingsData.top_by_amount.slice(0, 10));
-    renderAchievementHistogram(rankingsData.top_by_amount);
-
-    // Fetch project and status breakdowns
-    const sqlProjRes = await fetch('/api/sql/total_sales_by_project');
-    if (sqlProjRes.ok) {
-      const projData = await sqlProjRes.json();
-      renderProjectChart(projData.data);
+    if (rankingsRes.status === 'fulfilled' && rankingsRes.value.ok) {
+      const rankingsData = await rankingsRes.value.json();
+      allExecutives = rankingsData.top_by_amount || [];
+      renderExecutiveTable(allExecutives);
+      renderTargetVsAchievedChart(allExecutives.slice(0, 10));
+      renderAchievementHistogram(allExecutives);
+    } else {
+      console.warn('Rankings request failed, falling back to top_n=50');
+      try {
+        const fallbackRes = await fetch('/api/rankings?top_n=50');
+        if (fallbackRes.ok) {
+          const fallbackData = await fallbackRes.json();
+          allExecutives = fallbackData.top_by_amount || [];
+          renderExecutiveTable(allExecutives);
+          renderTargetVsAchievedChart(allExecutives.slice(0, 10));
+          renderAchievementHistogram(allExecutives);
+        }
+      } catch (e) {
+        console.error('Rankings fallback error:', e);
+      }
     }
 
-    renderDuesStatusChart();
+    // Fetch project breakdown
+    try {
+      const sqlProjRes = await fetch('/api/sql/total_sales_by_project');
+      if (sqlProjRes.ok) {
+        const projData = await sqlProjRes.json();
+        renderProjectChart(projData.data || []);
+      }
+    } catch (err) {
+      console.error('Error loading project chart:', err);
+    }
+
+    // Always render dues status chart
+    try {
+      renderDuesStatusChart();
+    } catch (err) {
+      console.error('Error rendering dues status chart:', err);
+    }
   } catch (err) {
-    console.error('Error loading rankings or charts:', err);
+    console.error('Error in loadRankingsAndCharts:', err);
   }
 }
 
