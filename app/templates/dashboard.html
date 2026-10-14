@@ -217,6 +217,51 @@
                     </tbody>
                 </table>
             </div>
+        <!-- Grounded RAG Operations Co-Pilot -->
+        <section class="card" style="margin-bottom: 24px;">
+            <div class="card-header">
+                <div>
+                    <h2 class="card-title">Grounded Sales Operations Assistant (RAG Engine)</h2>
+                    <p class="card-desc">Ask questions grounded in the 8 verified Excel files (July–September budgets, discount history, executive metrics, and property ownership charter)</p>
+                </div>
+                <div>
+                    <span class="chip chip-status" style="border-color: #800000; color: #800000; background: #fef2f2;">Groq Cloud • openai/gpt-oss-120b</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 20px;">
+                <!-- Sample Quick Queries -->
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Quick Ledger Queries:</span>
+                    <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="askCopilot('What discounts were given on hotel shares in July 2026 and what was the average discount rate?')">
+                        July Share Discounts
+                    </button>
+                    <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="askCopilot('Who were the top 5 performing sales executives in September 2026 and what did they achieve?')">
+                        September Top Performers
+                    </button>
+                    <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="askCopilot('What was the total company target, achieved sales, and total collection in September 2026?')">
+                        Total Target vs Achieved
+                    </button>
+                    <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="askCopilot('What are the investor ownership rights, annual dividend yields, and complimentary stay privileges?')">
+                        Investor Ownership Rights
+                    </button>
+                </div>
+
+                <!-- Chat Display Box -->
+                <div id="copilotFeed" style="max-height: 280px; min-height: 140px; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
+                        <strong style="color: #38bdf8;">Operations Co-Pilot:</strong> Ready. Ask any factual question regarding corporate sales budgets, executive targets, sold share discount histories, or investor deed privileges.
+                    </div>
+                </div>
+
+                <!-- Chat Input Row -->
+                <div style="display: flex; gap: 10px; margin-top: 4px;">
+                    <input type="text" id="copilotInput" class="form-input" placeholder="Type an inquiry (e.g. What were the total collections across projects?)..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendCopilotQuery()">
+                    <button type="button" id="copilotBtn" class="btn" onclick="sendCopilotQuery()" style="padding: 0 20px;">
+                        Ask Co-Pilot
+                    </button>
+                </div>
+            </div>
         </section>
 
         <!-- Phase 5: AI Lead Qualification Lab -->
@@ -339,6 +384,6 @@
         AI Sales Operations Assistant • Sunset Kuakata Hotel & Resort Ltd. • Built with FastAPI, PostgreSQL 16 & Groq LLM
     </footer>
 
-    <script src="/static/js/app.js"></script>
+    <script src="/static/js/app.js?v=2"></script>
 </body>
 </html>

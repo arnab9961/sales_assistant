@@ -18,6 +18,16 @@ const formatPct = (num) => {
   return num.toFixed(1) + '%';
 };
 
+const escapeHtml = (str) => {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+};
+
 // Initialization on DOM load
 document.addEventListener('DOMContentLoaded', () => {
   initDashboard();
@@ -562,5 +572,69 @@ async function loadLeadsTable() {
     });
   } catch (err) {
     console.error('Failed to load leads table:', err);
+  }
+}
+
+// 7. Grounded RAG Co-Pilot Interaction
+function askCopilot(query) {
+  const input = document.getElementById('copilotInput');
+  if (input) {
+    input.value = query;
+    sendCopilotQuery();
+  }
+}
+
+async function sendCopilotQuery() {
+  const input = document.getElementById('copilotInput');
+  const btn = document.getElementById('copilotBtn');
+  const feed = document.getElementById('copilotFeed');
+  if (!input || !feed) return;
+
+  const query = input.value.trim();
+  if (!query) return;
+
+  input.value = '';
+  if (btn) btn.disabled = true;
+
+  // Append user message
+  const userDiv = document.createElement('div');
+  userDiv.style.cssText = 'font-size: 0.85rem; color: #111827; line-height: 1.5; padding: 8px 12px; background: #fef2f2; border-left: 3px solid #800000; border-radius: 4px;';
+  userDiv.innerHTML = `<strong>You:</strong> ${escapeHtml(query)}`;
+  feed.appendChild(userDiv);
+
+  // Append waiting message
+  const botDiv = document.createElement('div');
+  botDiv.style.cssText = 'font-size: 0.85rem; color: #374151; line-height: 1.5; padding: 10px 14px; background: #f9fafb; border: 1px solid #e5e7eb; border-left: 3px solid #15803d; border-radius: 4px;';
+  botDiv.innerHTML = `<strong>Operations Co-Pilot:</strong> <em>Retrieving spreadsheet ledger records via FAISS...</em>`;
+  feed.appendChild(botDiv);
+  feed.scrollTop = feed.scrollHeight;
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: query }],
+      }),
+    });
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    let sourcesHtml = '';
+    if (data.sources && data.sources.length > 0) {
+      sourcesHtml = '<div style="margin-top: 8px; font-size: 0.75rem; color: #6b7280; display: flex; flex-wrap: wrap; gap: 4px;">';
+      data.sources.forEach(s => {
+        sourcesHtml += `<span style="background: #ffffff; border: 1px solid #d1d5db; color: #800000; padding: 2px 6px; border-radius: 3px; font-family: monospace;">[${escapeHtml(s.file)}: ${escapeHtml(s.sheet)}]</span>`;
+      });
+      sourcesHtml += '</div>';
+    }
+
+    botDiv.innerHTML = `<strong>Operations Co-Pilot:</strong> <div style="margin-top: 6px; white-space: pre-wrap; color: #111827;">${escapeHtml(data.answer)}</div>${sourcesHtml}`;
+  } catch (err) {
+    botDiv.innerHTML = `<strong>Operations Co-Pilot:</strong> <span style="color: #ef4444;">Error contacting RAG assistant: ${err.message}</span>`;
+  } finally {
+    if (btn) btn.disabled = false;
+    feed.scrollTop = feed.scrollHeight;
   }
 }

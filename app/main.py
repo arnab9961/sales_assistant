@@ -18,6 +18,7 @@ from app.api.forecast import router as forecast_router
 from app.api.sql_routes import router as sql_router
 from app.api.leads import router as leads_router
 from app.api.webhooks import router as webhooks_router
+from app.api.chat import router as chat_router
 
 logging.basicConfig(
     level=logging.INFO if not settings.DEBUG else logging.DEBUG,
@@ -80,6 +81,7 @@ app.include_router(forecast_router)
 app.include_router(sql_router)
 app.include_router(leads_router)
 app.include_router(webhooks_router)
+app.include_router(chat_router)
 
 
 @app.get("/health", tags=["System"])

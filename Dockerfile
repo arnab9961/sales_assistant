@@ -41,6 +41,9 @@ COPY --from=builder --chown=appuser:appgroup /root/.local /home/appuser/.local
 COPY --chown=appuser:appgroup app/ ./app/
 COPY --chown=appuser:appgroup sql/ ./sql/
 COPY --chown=appuser:appgroup tests/ ./tests/
+COPY --chown=appuser:appgroup main.py ./
+COPY --chown=appuser:appgroup faiss_index.index ./
+COPY --chown=appuser:appgroup faiss_index_metadata.pkl ./
 
 USER appuser
 
@@ -49,4 +52,4 @@ EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:8000/health || exit 1
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
