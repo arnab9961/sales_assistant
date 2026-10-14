@@ -38,9 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
     filterExecutiveTable();
   });
 
-  document.getElementById('execSearch').addEventListener('input', () => {
-    filterExecutiveTable();
-  });
+  const searchInput = document.getElementById('execSearch');
+  if (searchInput) {
+    searchInput.addEventListener('input', () => {
+      filterExecutiveTable();
+    });
+  }
 
   // Bind lead form submission
   document.getElementById('leadForm').addEventListener('submit', handleLeadSubmission);
@@ -428,7 +431,8 @@ function renderExecutiveTable(execs) {
 
 function filterExecutiveTable() {
   const role = document.getElementById('roleFilter').value;
-  const search = document.getElementById('execSearch').value.toLowerCase().trim();
+  const searchInput = document.getElementById('execSearch');
+  const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
 
   let filtered = allExecutives;
   if (role && role !== 'All') {

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ app_name }} - Sunset Kuakata Hotel & Resort</title>
+    <meta name="application-name" content="AI Sales Operations Assistant">
+    <title>Sunset Kuakata Operations Intelligence - Sales Operations Portal</title>
     <!-- Google Fonts Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,18 +20,18 @@
         <div class="brand-wrapper">
             <div class="brand-logo">SK</div>
             <div>
-                <h1 class="brand-title">{{ app_name }}</h1>
-                <p class="brand-subtitle">Sunset Kuakata Hotel & Resort • Operations Intelligence & AI Lead Automation</p>
+                <h1 class="brand-title">Sunset Kuakata Operations Intelligence</h1>
+                <p class="brand-subtitle">Sunset Kuakata Hotel & Resort Ltd. • Commercial Sales & Revenue Performance Portal</p>
             </div>
         </div>
         <div class="header-badges">
             {% if anonymize_names %}
-            <span class="chip chip-anon" title="Privacy mode: All personal names replaced with stable pseudonyms">
-                <span class="dot"></span> Anonymization Active
+            <span class="chip chip-anon" title="Privacy protocol: Pseudonym identifiers enabled for data protection">
+                <span class="dot"></span> Compliance Protocol Active
             </span>
             {% endif %}
             <span class="chip chip-status">
-                <span class="dot"></span> Read-Only DB Connected
+                <span class="dot"></span> Verified Database Online
             </span>
         </div>
     </header>
@@ -49,10 +50,6 @@
                     <option value="Group Leader">Group Leader</option>
                 </select>
             </div>
-            <div class="filter-group">
-                <span class="filter-label">Search Executive:</span>
-                <input type="text" id="execSearch" class="text-input" placeholder="e.g. Exec-01 or TL...">
-            </div>
             <button class="btn" onclick="initDashboard()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
@@ -66,42 +63,42 @@
             <div class="kpi-card">
                 <div class="kpi-title">Management Target</div>
                 <div class="kpi-value kpi-highlight" id="kpiTarget">--</div>
-                <div class="kpi-subtext">Active Filter Budget Target</div>
+                <div class="kpi-subtext">Assigned Sales Budget</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Achieved New Sales</div>
                 <div class="kpi-value kpi-success" id="kpiAchieved">--</div>
-                <div class="kpi-subtext">Month of September 2026</div>
+                <div class="kpi-subtext">Realized Booking Value (Sep 2026)</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Achievement Rate</div>
                 <div class="kpi-value" id="kpiAchievePct">--</div>
-                <div class="kpi-subtext">DAX Measure: DIVIDE(Achieved, Target)</div>
+                <div class="kpi-subtext">Budget Attainment Index</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Total Collected (incl. EMI)</div>
                 <div class="kpi-value kpi-warning" id="kpiCollection">--</div>
-                <div class="kpi-subtext">New Sales Deposit + EMI Collections</div>
+                <div class="kpi-subtext">New Sales Deposit + EMI Inflow</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Execs ≥ 100% Target</div>
                 <div class="kpi-value kpi-success" id="kpiExec100">--</div>
-                <div class="kpi-subtext">Met or Exceeded Target</div>
+                <div class="kpi-subtext">Target Surpassed</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Execs at Zero Achieved</div>
                 <div class="kpi-value" style="color: #ef4444;" id="kpiExecZero">--</div>
-                <div class="kpi-subtext">Immediate Follow-up Required</div>
+                <div class="kpi-subtext">Pipeline Review Required</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Mean / Median Achieved %</div>
                 <div class="kpi-value" id="kpiMeanMedian" style="font-size: 1.4rem;">--</div>
-                <div class="kpi-subtext">Skewness Indicator across Team</div>
+                <div class="kpi-subtext">Team Attainment Benchmark</div>
             </div>
             <div class="kpi-card">
                 <div class="kpi-title">Top-10 Concentration</div>
                 <div class="kpi-value kpi-highlight" id="kpiConcentration">--</div>
-                <div class="kpi-subtext">% of Total Sales from Top 10 Execs</div>
+                <div class="kpi-subtext">Top 10 Volume Contribution</div>
             </div>
         </section>
 
@@ -217,22 +214,22 @@
                     </tbody>
                 </table>
             </div>
-        <!-- Grounded RAG Operations Co-Pilot -->
+        <!-- Commercial Intelligence & Record Lookup -->
         <section class="card" style="margin-bottom: 24px;">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">Grounded Sales Operations Assistant (RAG Engine)</h2>
-                    <p class="card-desc">Ask questions grounded in the 8 verified Excel files (July–September budgets, discount history, executive metrics, and property ownership charter)</p>
+                    <h2 class="card-title">Commercial Records & Intelligence Lookup</h2>
+                    <p class="card-desc">Factual ledger search across sales budgets, realized collections, discount authorizations, and investor charters</p>
                 </div>
                 <div>
-                    <span class="chip chip-status" style="border-color: #800000; color: #800000; background: #fef2f2;">Groq Cloud • openai/gpt-oss-120b</span>
+                    <span class="chip chip-status" style="border-color: #800000; color: #800000; background: #fef2f2;">Executive Records Verified</span>
                 </div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 12px; padding: 16px 20px;">
                 <!-- Sample Quick Queries -->
                 <div style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center;">
-                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Quick Ledger Queries:</span>
+                    <span style="font-size: 0.75rem; font-weight: 600; color: var(--text-muted);">Quick Reference Queries:</span>
                     <button type="button" class="btn" style="padding: 4px 10px; font-size: 0.75rem;" onclick="askCopilot('What discounts were given on hotel shares in July 2026 and what was the average discount rate?')">
                         July Share Discounts
                     </button>
@@ -248,9 +245,9 @@
                 </div>
 
                 <!-- Chat Display Box -->
-                <div id="copilotFeed" style="max-height: 280px; min-height: 140px; overflow-y: auto; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
-                    <div style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">
-                        <strong style="color: #38bdf8;">Operations Co-Pilot:</strong> Ready. Ask any factual question regarding corporate sales budgets, executive targets, sold share discount histories, or investor deed privileges.
+                <div id="copilotFeed" style="max-height: 280px; min-height: 140px; overflow-y: auto; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 10px;">
+                    <div style="font-size: 0.85rem; color: var(--text-main); line-height: 1.5;">
+                        <strong style="color: var(--primary);">Operations Assistant:</strong> System active. Query corporate sales records, individual executive attainment, discount authorization logs, or property deed schedules.
                     </div>
                 </div>
 
@@ -258,18 +255,18 @@
                 <div style="display: flex; gap: 10px; margin-top: 4px;">
                     <input type="text" id="copilotInput" class="form-input" placeholder="Type an inquiry (e.g. What were the total collections across projects?)..." style="flex: 1;" onkeydown="if(event.key==='Enter') sendCopilotQuery()">
                     <button type="button" id="copilotBtn" class="btn" onclick="sendCopilotQuery()" style="padding: 0 20px;">
-                        Ask Co-Pilot
+                        Search Records
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- Phase 5: AI Lead Qualification Lab -->
+        <!-- Prospective Investor Intake & Lead Assessment -->
         <section class="card">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">AI Lead Qualification Lab (Groq LLM)</h2>
-                    <p class="card-desc">Submit investor inquiries for automated classification into Hot, Warm, or Cold with scoring</p>
+                    <h2 class="card-title">Prospective Investor Intake & Evaluation</h2>
+                    <p class="card-desc">Evaluate prospective buyers for investment suitability, unit tier match, and conversion priority</p>
                 </div>
             </div>
 
@@ -304,25 +301,25 @@
                         </div>
                         <div class="form-group full-width">
                             <button type="submit" id="submitLeadBtn" class="btn" style="width: 100%; justify-content: center; padding: 12px;">
-                                Qualify with AI
+                                Register & Evaluate Lead
                             </button>
                         </div>
                     </form>
                 </div>
 
-                <!-- AI Outcome Card -->
+                <!-- Outcome Card -->
                 <div id="outcomeContainer" class="ai-outcome-card">
-                    <span class="chip chip-anon" style="margin-bottom: 12px;">AI Assistant Ready</span>
-                    <h3 style="color: #fff; font-size: 1.1rem; margin-bottom: 6px;">Lead Qualification Engine</h3>
-                    <p style="font-size: 0.825rem; color: #94a3b8; max-width: 320px;">
-                        Submit a lead on the left. The AI model evaluates stated purchase intent, budget fit, and closing readiness strictly as data.
+                    <span class="chip chip-status" style="margin-bottom: 12px;">Intake Ready</span>
+                    <h3 style="color: var(--text-main); font-size: 1.1rem; margin-bottom: 6px;">Lead Evaluation Profile</h3>
+                    <p style="font-size: 0.825rem; color: var(--text-muted); max-width: 320px;">
+                        Submit prospect details on the left to evaluate buyer readiness, investment tier compatibility, and priority follow-up assignment.
                     </p>
                 </div>
             </div>
 
             <!-- Recent Leads Table -->
             <div style="margin-top: 28px;">
-                <h3 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 10px;">Recent Inquiries</h3>
+                <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 10px;">Recent Registrations</h3>
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
@@ -331,8 +328,8 @@
                                 <th>Customer Name</th>
                                 <th>Budget</th>
                                 <th>Interest</th>
-                                <th>Category</th>
-                                <th>Score</th>
+                                <th>Priority Tier</th>
+                                <th>Readiness Score</th>
                             </tr>
                         </thead>
                         <tbody id="leadsTableBody">
@@ -347,8 +344,8 @@
         <section class="card">
             <div class="card-header">
                 <div>
-                    <h2 class="card-title">Data Quality & Reconciliation Audit</h2>
-                    <p class="card-desc">Automated arithmetic validation and cross-checks against original spreadsheet summary totals</p>
+                    <h2 class="card-title">Commercial Audit & Reconciliation</h2>
+                    <p class="card-desc">Systematic verification of collection totals, executive ledger balances, and source documentation</p>
                 </div>
                 <div>
                     <span id="qualityStatusBadge" class="chip chip-status">PASS</span>
@@ -381,9 +378,9 @@
     </main>
 
     <footer style="text-align: center; font-size: 0.8rem; color: var(--text-dim); padding: 24px;">
-        AI Sales Operations Assistant • Sunset Kuakata Hotel & Resort Ltd. • Built with FastAPI, PostgreSQL 16 & Groq LLM
+        Sunset Kuakata Hotel & Resort Ltd. • Sales Operations Intelligence & Revenue Portal
     </footer>
 
-    <script src="/static/js/app.js?v=3"></script>
+    <script src="/static/js/app.js?v=4"></script>
 </body>
 </html>

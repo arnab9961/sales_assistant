@@ -5,7 +5,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "AI Sales Operations Assistant"
+    APP_NAME: str = "Sunset Kuakata Operations Intelligence"
     APP_ENV: str = "development"
     DEBUG: bool = True
     PORT: int = 8000
